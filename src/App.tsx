@@ -6,6 +6,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Inbox from "./pages/Inbox";
+import Flows from "./pages/Flows";
+import Agents from "./pages/Agents";
+import CRM from "./pages/CRM";
+import Analytics from "./pages/Analytics";
+import Broadcasts from "./pages/Broadcasts";
+import Automations from "./pages/Automations";
+import Knowledge from "./pages/Knowledge";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
@@ -22,9 +29,15 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/inbox" element={<Inbox />} />
+          <Route path="/dashboard/flows" element={<Flows />} />
+          <Route path="/dashboard/agents" element={<Agents />} />
+          <Route path="/dashboard/crm" element={<CRM />} />
+          <Route path="/dashboard/analytics" element={<Analytics />} />
+          <Route path="/dashboard/broadcasts" element={<Broadcasts />} />
+          <Route path="/dashboard/automations" element={<Automations />} />
+          <Route path="/dashboard/knowledge" element={<Knowledge />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
