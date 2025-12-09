@@ -10,7 +10,6 @@ import {
   Search,
   Play,
   Pause,
-  Settings,
   Clock,
   ArrowRight,
   MessageSquare,
@@ -19,36 +18,21 @@ import {
   Mail,
   Webhook,
   Filter,
-  Edit,
-  Copy,
   Trash2,
-  MoreVertical,
-  ChevronRight,
   Bot,
   Calendar,
   AlertCircle,
   CheckCircle2,
-  XCircle,
 } from "lucide-react";
 
 interface Automation {
   id: string;
   name: string;
   description: string;
-  trigger: {
-    type: string;
-    icon: any;
-    description: string;
-  };
-  actions: {
-    type: string;
-    icon: any;
-    description: string;
-  }[];
+  trigger: { type: string; icon: any; description: string };
+  actions: { type: string; icon: any; description: string }[];
   status: "active" | "paused" | "error";
   executions: number;
-  lastRun?: string;
-  createdAt: string;
 }
 
 const triggerTypes = [
@@ -75,120 +59,17 @@ const actionTypes = [
   { type: "schedule", label: "Schedule Action", icon: Calendar, description: "Schedule for specific time" },
 ];
 
-const mockAutomations: Automation[] = [
-  {
-    id: "1",
-    name: "Welcome New Leads",
-    description: "Send welcome message and assign to sales team",
-    trigger: {
-      type: "new_conversation",
-      icon: MessageSquare,
-      description: "New WhatsApp conversation",
-    },
-    actions: [
-      { type: "send_message", icon: MessageSquare, description: "Send welcome message" },
-      { type: "add_tag", icon: Tag, description: "Add 'new-lead' tag" },
-      { type: "trigger_ai", icon: Bot, description: "Activate Lead Qualifier AI" },
-    ],
-    status: "active",
-    executions: 2456,
-    lastRun: "2 mins ago",
-    createdAt: "Nov 15, 2024",
-  },
-  {
-    id: "2",
-    name: "Follow Up Inactive Leads",
-    description: "Re-engage leads that haven't responded in 48h",
-    trigger: {
-      type: "time_based",
-      icon: Clock,
-      description: "Every 6 hours",
-    },
-    actions: [
-      { type: "send_message", icon: MessageSquare, description: "Send follow-up message" },
-      { type: "add_tag", icon: Tag, description: "Add 'follow-up-sent' tag" },
-    ],
-    status: "active",
-    executions: 892,
-    lastRun: "1 hour ago",
-    createdAt: "Nov 20, 2024",
-  },
-  {
-    id: "3",
-    name: "High Intent Lead Alert",
-    description: "Notify sales team when lead score exceeds 80",
-    trigger: {
-      type: "tag_applied",
-      icon: Tag,
-      description: "When 'hot-lead' tag is applied",
-    },
-    actions: [
-      { type: "send_email", icon: Mail, description: "Email sales team" },
-      { type: "assign_staff", icon: Users, description: "Assign to senior sales" },
-      { type: "webhook", icon: Webhook, description: "Update external CRM" },
-    ],
-    status: "active",
-    executions: 156,
-    lastRun: "30 mins ago",
-    createdAt: "Nov 25, 2024",
-  },
-  {
-    id: "4",
-    name: "Support Ticket Created",
-    description: "Create ticket in helpdesk when support keyword detected",
-    trigger: {
-      type: "keyword_match",
-      icon: Tag,
-      description: "Keywords: 'help', 'support', 'issue'",
-    },
-    actions: [
-      { type: "trigger_ai", icon: Bot, description: "Activate Support AI" },
-      { type: "webhook", icon: Webhook, description: "Create Zendesk ticket" },
-      { type: "add_tag", icon: Tag, description: "Add 'support-request' tag" },
-    ],
-    status: "paused",
-    executions: 567,
-    lastRun: "2 days ago",
-    createdAt: "Nov 10, 2024",
-  },
-  {
-    id: "5",
-    name: "Appointment Confirmation",
-    description: "Send reminder 24h before scheduled appointment",
-    trigger: {
-      type: "time_based",
-      icon: Clock,
-      description: "24h before appointment",
-    },
-    actions: [
-      { type: "send_message", icon: MessageSquare, description: "Send reminder" },
-      { type: "delay", icon: Clock, description: "Wait 2 hours" },
-      { type: "send_message", icon: MessageSquare, description: "Send confirmation request" },
-    ],
-    status: "error",
-    executions: 234,
-    lastRun: "Failed 1 hour ago",
-    createdAt: "Dec 1, 2024",
-  },
-];
-
 export function AutomationsView() {
   const [activeTab, setActiveTab] = useState("automations");
   const [showBuilder, setShowBuilder] = useState(false);
+  const [automations, setAutomations] = useState<Automation[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrigger, setSelectedTrigger] = useState<string | null>(null);
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
 
-  const filteredAutomations = mockAutomations.filter(
-    (a) =>
-      a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   if (showBuilder) {
     return (
       <div className="h-full flex flex-col">
-        {/* Builder Header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/50">
           <div className="flex items-center gap-4">
             <Button variant="ghost" onClick={() => setShowBuilder(false)}>
@@ -208,10 +89,8 @@ export function AutomationsView() {
           </div>
         </div>
 
-        {/* Builder Content */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto space-y-6">
-            {/* Automation Name */}
             <Card variant="gradient">
               <CardContent className="p-4">
                 <label className="text-sm font-medium mb-2 block">Automation Name</label>
@@ -224,7 +103,6 @@ export function AutomationsView() {
               </CardContent>
             </Card>
 
-            {/* Trigger Selection */}
             <Card variant="gradient">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -250,51 +128,9 @@ export function AutomationsView() {
                     </div>
                   ))}
                 </div>
-
-                {selectedTrigger && (
-                  <div className="mt-4 p-4 rounded-lg bg-secondary/30">
-                    <h4 className="font-medium mb-3">Configure Trigger</h4>
-                    {selectedTrigger === "keyword_match" && (
-                      <div className="space-y-3">
-                        <label className="text-sm">Keywords (comma separated)</label>
-                        <Input placeholder="e.g., pricing, demo, help" />
-                      </div>
-                    )}
-                    {selectedTrigger === "time_based" && (
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm">Frequency</label>
-                          <select className="w-full px-3 py-2 rounded-lg bg-secondary border border-border text-sm">
-                            <option>Every hour</option>
-                            <option>Every 6 hours</option>
-                            <option>Daily</option>
-                            <option>Weekly</option>
-                          </select>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm">At time</label>
-                          <Input type="time" />
-                        </div>
-                      </div>
-                    )}
-                    {selectedTrigger === "new_conversation" && (
-                      <div className="space-y-3">
-                        <label className="text-sm">Channel</label>
-                        <select className="w-full px-3 py-2 rounded-lg bg-secondary border border-border text-sm">
-                          <option>All Channels</option>
-                          <option>WhatsApp</option>
-                          <option>Instagram</option>
-                          <option>Telegram</option>
-                          <option>Email</option>
-                        </select>
-                      </div>
-                    )}
-                  </div>
-                )}
               </CardContent>
             </Card>
 
-            {/* Actions */}
             <Card variant="gradient">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -308,10 +144,7 @@ export function AutomationsView() {
                     const action = actionTypes.find((a) => a.type === actionType);
                     if (!action) return null;
                     return (
-                      <div
-                        key={index}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30"
-                      >
+                      <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30">
                         <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
                           <span className="text-sm font-bold text-primary">{index + 1}</span>
                         </div>
@@ -320,15 +153,10 @@ export function AutomationsView() {
                           <div className="font-medium text-sm">{action.label}</div>
                           <div className="text-xs text-muted-foreground">{action.description}</div>
                         </div>
-                        <Button variant="ghost" size="sm">
-                          Configure
-                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() =>
-                            setSelectedActions(selectedActions.filter((_, i) => i !== index))
-                          }
+                          onClick={() => setSelectedActions(selectedActions.filter((_, i) => i !== index))}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -353,7 +181,6 @@ export function AutomationsView() {
               </CardContent>
             </Card>
 
-            {/* Conditions */}
             <Card variant="gradient">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -381,7 +208,6 @@ export function AutomationsView() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Automations</h1>
@@ -395,13 +221,12 @@ export function AutomationsView() {
         </Button>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card variant="gradient">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold">{mockAutomations.length}</div>
+                <div className="text-2xl font-bold">{automations.length}</div>
                 <div className="text-sm text-muted-foreground">Total Automations</div>
               </div>
               <Zap className="w-8 h-8 text-primary" />
@@ -413,7 +238,7 @@ export function AutomationsView() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-2xl font-bold">
-                  {mockAutomations.filter((a) => a.status === "active").length}
+                  {automations.filter((a) => a.status === "active").length}
                 </div>
                 <div className="text-sm text-muted-foreground">Active</div>
               </div>
@@ -425,9 +250,7 @@ export function AutomationsView() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold">
-                  {mockAutomations.reduce((acc, a) => acc + a.executions, 0).toLocaleString()}
-                </div>
+                <div className="text-2xl font-bold">0</div>
                 <div className="text-sm text-muted-foreground">Total Executions</div>
               </div>
               <ArrowRight className="w-8 h-8 text-accent" />
@@ -438,9 +261,7 @@ export function AutomationsView() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold">
-                  {mockAutomations.filter((a) => a.status === "error").length}
-                </div>
+                <div className="text-2xl font-bold">0</div>
                 <div className="text-sm text-muted-foreground">Errors</div>
               </div>
               <AlertCircle className="w-8 h-8 text-destructive" />
@@ -458,7 +279,6 @@ export function AutomationsView() {
         </TabsList>
 
         <TabsContent value={activeTab} className="space-y-4 mt-4">
-          {/* Search */}
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -470,99 +290,21 @@ export function AutomationsView() {
             />
           </div>
 
-          {/* Automations List */}
-          <div className="space-y-4">
-            {filteredAutomations
-              .filter((a) =>
-                activeTab === "automations"
-                  ? true
-                  : activeTab === "active"
-                  ? a.status === "active"
-                  : activeTab === "paused"
-                  ? a.status === "paused"
-                  : true
-              )
-              .map((automation) => (
-                <Card
-                  key={automation.id}
-                  variant="gradient"
-                  className="hover:border-primary/50 transition-colors"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold">{automation.name}</h3>
-                          <Badge
-                            variant={
-                              automation.status === "active"
-                                ? "success"
-                                : automation.status === "error"
-                                ? "destructive"
-                                : "secondary"
-                            }
-                          >
-                            {automation.status}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          {automation.description}
-                        </p>
-
-                        {/* Trigger & Actions Visual */}
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-warning/10 border border-warning/30">
-                            <automation.trigger.icon className="w-4 h-4 text-warning" />
-                            <span className="text-sm font-medium">{automation.trigger.description}</span>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                          {automation.actions.map((action, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/30"
-                            >
-                              <action.icon className="w-4 h-4 text-primary" />
-                              <span className="text-sm">{action.description}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-6">
-                        <div className="text-right">
-                          <div className="text-lg font-bold">{automation.executions.toLocaleString()}</div>
-                          <div className="text-xs text-muted-foreground">executions</div>
-                        </div>
-                        {automation.lastRun && (
-                          <div className="text-right">
-                            <div className="text-sm font-medium">{automation.lastRun}</div>
-                            <div className="text-xs text-muted-foreground">last run</div>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1">
-                          <Button variant="ghost" size="icon">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon">
-                            {automation.status === "active" ? (
-                              <Pause className="w-4 h-4" />
-                            ) : (
-                              <Play className="w-4 h-4" />
-                            )}
-                          </Button>
-                          <Button variant="ghost" size="icon">
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon">
-                            <MoreVertical className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
+          {automations.length === 0 ? (
+            <Card variant="gradient" className="border-dashed">
+              <CardContent className="p-12 text-center">
+                <Zap className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Automations Yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  Create your first automation to trigger actions based on events.
+                </p>
+                <Button variant="hero" onClick={() => setShowBuilder(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Your First Automation
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
         </TabsContent>
       </Tabs>
     </div>
