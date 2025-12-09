@@ -6,83 +6,75 @@ import {
   Users, 
   Bot, 
   TrendingUp,
-  ArrowUpRight,
-  ArrowDownRight,
   Clock,
   Zap,
-  Plus
+  Plus,
+  Inbox,
+  Workflow,
+  ArrowRight
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const stats = [
+const emptyStats = [
   { 
     name: "Total Conversations", 
-    value: "12,847", 
-    change: "+12%", 
-    trend: "up",
+    value: "0", 
     icon: MessageSquare,
-    color: "text-primary"
+    color: "text-primary",
+    description: "Start a conversation"
   },
   { 
     name: "Active Leads", 
-    value: "3,421", 
-    change: "+8%", 
-    trend: "up",
+    value: "0", 
     icon: Users,
-    color: "text-success"
+    color: "text-success",
+    description: "Import or add leads"
   },
   { 
     name: "AI Messages", 
-    value: "89,234", 
-    change: "+24%", 
-    trend: "up",
+    value: "0", 
     icon: Bot,
-    color: "text-accent"
+    color: "text-accent",
+    description: "Configure AI agents"
   },
   { 
     name: "Conversion Rate", 
-    value: "24.8%", 
-    change: "-2%", 
-    trend: "down",
+    value: "--", 
     icon: TrendingUp,
-    color: "text-warning"
+    color: "text-warning",
+    description: "Tracking enabled"
   },
 ];
 
-const recentConversations = [
+const quickActions = [
   { 
-    name: "Sarah Johnson", 
-    message: "I'd like to know more about your pricing...",
-    channel: "WhatsApp",
-    time: "2m ago",
-    status: "active"
+    title: "Create AI Agent",
+    description: "Build an intelligent bot to handle conversations",
+    icon: Bot,
+    href: "/dashboard/agents",
+    color: "bg-primary/10 text-primary"
   },
   { 
-    name: "Michael Chen", 
-    message: "Thanks for the quick response!",
-    channel: "Instagram",
-    time: "15m ago",
-    status: "resolved"
+    title: "Build Automation",
+    description: "Set up trigger-based workflows",
+    icon: Zap,
+    href: "/dashboard/automations",
+    color: "bg-accent/10 text-accent"
   },
   { 
-    name: "Emma Wilson", 
-    message: "Can I schedule a demo for tomorrow?",
-    channel: "Email",
-    time: "32m ago",
-    status: "pending"
+    title: "Design Flow",
+    description: "Create visual conversation flows",
+    icon: Workflow,
+    href: "/dashboard/flows",
+    color: "bg-success/10 text-success"
   },
   { 
-    name: "David Brown", 
-    message: "The AI agent was super helpful!",
-    channel: "Telegram",
-    time: "1h ago",
-    status: "resolved"
+    title: "Import Contacts",
+    description: "Add leads and customers to CRM",
+    icon: Users,
+    href: "/dashboard/crm",
+    color: "bg-warning/10 text-warning"
   },
-];
-
-const activeAgents = [
-  { name: "Sales Closer", conversations: 234, accuracy: "94%", status: "active" },
-  { name: "Support Agent", conversations: 567, accuracy: "97%", status: "active" },
-  { name: "Lead Qualifier", conversations: 189, accuracy: "91%", status: "active" },
 ];
 
 export function DashboardHome() {
@@ -92,7 +84,7 @@ export function DashboardHome() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back! Here's what's happening.</p>
+          <p className="text-muted-foreground">Welcome to ReficulBot. Let's get started.</p>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock className="w-4 h-4" />
@@ -102,24 +94,13 @@ export function DashboardHome() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
+        {emptyStats.map((stat) => (
           <Card key={stat.name} variant="gradient">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className={`w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center`}>
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                 </div>
-                <Badge 
-                  variant={stat.trend === 'up' ? 'success' : 'destructive'}
-                  className="gap-1"
-                >
-                  {stat.trend === 'up' ? (
-                    <ArrowUpRight className="w-3 h-3" />
-                  ) : (
-                    <ArrowDownRight className="w-3 h-3" />
-                  )}
-                  {stat.change}
-                </Badge>
               </div>
               <div className="mt-4">
                 <div className="text-3xl font-bold">{stat.value}</div>
@@ -130,85 +111,83 @@ export function DashboardHome() {
         ))}
       </div>
 
+      {/* Quick Actions */}
+      <Card variant="gradient">
+        <CardHeader>
+          <CardTitle className="text-lg">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {quickActions.map((action) => (
+              <Link key={action.title} to={action.href}>
+                <div className="p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-secondary/30 transition-all cursor-pointer group">
+                  <div className={`w-12 h-12 rounded-xl ${action.color} flex items-center justify-center mb-4`}>
+                    <action.icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">{action.title}</h3>
+                  <p className="text-sm text-muted-foreground">{action.description}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Content Grid */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Recent Conversations */}
+        {/* Recent Conversations - Empty State */}
         <Card variant="gradient" className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg">Recent Conversations</CardTitle>
-            <Button variant="ghost" size="sm">View All</Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/dashboard/inbox">View All</Link>
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentConversations.map((conv, index) => (
-                <div 
-                  key={index}
-                  className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary/50 transition-colors cursor-pointer"
-                >
-                  <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-semibold text-primary-foreground">
-                    {conv.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">{conv.name}</span>
-                      <Badge variant="channel" className="text-[10px]">{conv.channel}</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground truncate">{conv.message}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs text-muted-foreground">{conv.time}</div>
-                    <Badge 
-                      variant={conv.status === 'active' ? 'success' : conv.status === 'pending' ? 'warning' : 'secondary'}
-                      className="text-[10px] mt-1"
-                    >
-                      {conv.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                <Inbox className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="font-semibold mb-2">No conversations yet</h3>
+              <p className="text-sm text-muted-foreground max-w-sm mb-4">
+                Connect a channel or embed the web chat widget to start receiving conversations.
+              </p>
+              <Button variant="outline" asChild>
+                <Link to="/dashboard/inbox" className="gap-2">
+                  Go to Inbox
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Active Agents */}
+        {/* Active Agents - Empty State */}
         <Card variant="gradient">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg">Active AI Agents</CardTitle>
-            <Button variant="ghost" size="icon" className="w-8 h-8">
-              <Plus className="w-4 h-4" />
+            <CardTitle className="text-lg">AI Agents</CardTitle>
+            <Button variant="ghost" size="icon" className="w-8 h-8" asChild>
+              <Link to="/dashboard/agents">
+                <Plus className="w-4 h-4" />
+              </Link>
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {activeAgents.map((agent, index) => (
-                <div 
-                  key={index}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                    <Bot className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">{agent.name}</span>
-                      <Badge variant="online" className="text-[10px]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-success mr-1" />
-                        Active
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                      <span>{agent.conversations} convos</span>
-                      <span>{agent.accuracy} accuracy</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-4">
+                <Bot className="w-7 h-7 text-accent" />
+              </div>
+              <h3 className="font-semibold mb-2">No agents created</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Create your first AI agent to automate conversations.
+              </p>
+              <Button variant="outline" className="gap-2" asChild>
+                <Link to="/dashboard/agents">
+                  <Zap className="w-4 h-4" />
+                  Create Agent
+                </Link>
+              </Button>
             </div>
-            
-            <Button variant="outline" className="w-full mt-4 gap-2">
-              <Zap className="w-4 h-4" />
-              Create New Agent
-            </Button>
           </CardContent>
         </Card>
       </div>
